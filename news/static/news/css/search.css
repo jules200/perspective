@@ -1,0 +1,65 @@
+/* Search page styles */
+
+.search-hdr > div:first-child {
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--mg);
+    margin-bottom: 8px;
+}
+
+.search-results p {
+    color: var(--mg);
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+.search-results strong {
+    color: var(--navy);
+}
+
+.input-group {
+    max-width: 560px;
+}
+
+.form-control {
+    border-color: var(--bdr);
+    border-right: none;
+}
+
+.btn-search {
+    background: var(--navy);
+    color: var(--gold);
+    border-color: var(--navy);
+    font-weight: 700;
+    padding: 0 22px;
+}
+
+.article-title a {
+    color: inherit;
+}
+
+.article-summary {
+    font-size: 14px;
+    color: var(--mg);
+    margin-bottom: 10px;
+}
+
+.no-results {
+    text-align: center;
+    padding: 60px;
+    background: var(--wh);
+    border: 1px solid var(--bdr);
+}
+
+.no-results i {
+    font-size: 50px;
+    color: var(--bdr);
+    display: block;
+    margin-bottom: 16px;
+}
+
+.no-results h4 {
+    font-family: 'Merriweather', serif;
+    color: var(--navy);
+}

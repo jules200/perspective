@@ -1,0 +1,62 @@
+/* Home page styles */
+
+.breaking-bar .container {
+    overflow: hidden;
+}
+
+.sec-hd i {
+    color: var(--gold);
+}
+
+.ac h5 a {
+    color: inherit;
+}
+
+.no-articles {
+    text-align: center;
+    padding: 50px;
+    background: var(--wh);
+    border: 1px solid var(--bdr);
+}
+
+.no-articles i {
+    font-size: 48px;
+    color: var(--bdr);
+    display: block;
+    margin-bottom: 14px;
+}
+
+.no-articles p {
+    color: var(--mg);
+}
+
+.admin-link {
+    background: var(--navy);
+    color: var(--gold);
+    padding: 8px 20px;
+    border-radius: 2px;
+    font-weight: 700;
+    font-size: 13px;
+}
+
+.cat-blocks .ctag {
+    border-left-color: var(--green);
+}
+
+.cat-blocks h5 a {
+    color: inherit;
+}
+
+.cat-blocks .empty-msg {
+    color: var(--mg);
+    padding: 20px;
+    background: var(--wh);
+    border: 1px solid var(--bdr);
+    font-size: 14px;
+}
+
+.trend-list li.empty {
+    padding: 16px;
+    color: var(--mg);
+    font-size: 13px;
+}

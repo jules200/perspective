@@ -1,0 +1,294 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="{{ lang_code }}">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}The Perspectives{% endblock %}</title>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,400;0,700;0,900;1,400&family=Source+Sans+Pro:wght@300;400;600;700&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'news/css/base.css' %}">
+{% block extra_head %}{% endblock %}
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="container">
+    <div class="d-flex justify-content-between align-items-center flex-wrap" style="gap:8px;">
+      <div>
+        <span id="tb-date"></span>
+        <span class="tb-sep">|</span>
+        <a href="/{{ lang_code }}/">{% if lang_code == 'rw' %}Ahabanza{% else %}Home{% endif %}</a>
+        <span class="tb-sep">|</span>
+        <a href="#"><i class="fas fa-rss fa-xs"></i> RSS</a>
+      </div>
+
+      <!-- LANGUAGE SWITCHER — POST to /switch-lang/ with lang=en|rw -->
+      <div class="lang-sw">
+        <span class="lang-sw-lbl">{% if lang_code == 'rw' %}Ururimi{% else %}Language{% endif %}:</span>
+        {% for lng in all_languages %}
+        <form method="POST" action="/switch-lang/" class="lang-form">
+          {% csrf_token %}
+          <input type="hidden" name="lang" value="{{ lng.code }}">
+          <input type="hidden" name="next" value="{{ current_path }}">
+          <button type="submit" class="lang-btn {% if lang_code == lng.code %}active{% endif %}">
+            {{ lng.flag_emoji }} {{ lng.code|upper }}
+          </button>
+        </form>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MASTHEAD -->
+<div class="masthead">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-md-7">
+        <a href="/{{ lang_code }}/" class="d-inline-block mast-logo">
+          <img src="{% static 'news/img/logo.png' %}" alt="The Perspectives"
+               onerror="this.style.display='none';document.getElementById('mlfb').style.display='flex';">
+          <div id="mlfb" class="mast-logo-fb">
+            <span class="mast-logo-the">The</span>
+            <span class="mast-logo-name">Perspectives</span>
+            <span class="mast-logo-tag">Research · Rwanda · Africa · World</span>
+          </div>
+        </a>
+      </div>
+      <div class="col-md-5 d-none d-md-block mast-right">
+        <div class="mast-date">
+          <span class="mday" id="mday"></span>
+          <span id="mdt"></span>
+        </div>
+        {% if lang %}
+        <span class="mast-lang-badge">{{ lang.flag_emoji }} {{ lang.native_name }}</span>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PRIMARY NAV — main categories only -->
+<nav class="pnav navbar navbar-expand-lg navbar-dark py-0" id="pnav">
+  <div class="container">
+    <button class="navbar-toggler my-2" type="button" data-toggle="collapse" data-target="#pnav-col">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="pnav-col">
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item">
+          <a class="nav-link pnav-lnk {% block home_active %}{% endblock %}" href="/{{ lang_code }}/">
+            {% if lang_code == 'rw' %}Ahabanza{% else %}Home{% endif %}
+          </a>
+        </li>
+        {% for cat in nav_cats %}
+        <li class="nav-item">
+          <a class="nav-link pnav-lnk {% block cat_active %}{% endblock %}"
+             href="/{{ lang_code }}/category/{{ cat.slug }}/"
+             data-cid="{{ cat.id }}" data-cname="{{ cat.name }}"
+             data-curl="/{{ lang_code }}/category/{{ cat.slug }}/"
+             onclick="return navCatClick(event,this)">
+            {{ cat.name }}<i class="fas fa-chevron-down ci"></i>
+          </a>
+        </li>
+        {% endfor %}
+      </ul>
+      <form class="nav-search" action="/{{ lang_code }}/search/" method="get">
+        <input type="text" name="q"
+               placeholder="{% if lang_code == 'rw' %}Shakisha...{% else %}Search...{% endif %}"
+               value="{{ request.GET.q|default:'' }}" autocomplete="off">
+        <button type="submit"><i class="fas fa-search"></i></button>
+      </form>
+    </div>
+  </div>
+</nav>
+
+<!-- SECONDARY NAV — sub-categories expand on cat click -->
+<div class="snav" id="snav">
+  <div class="container">
+    <div class="snav-inner" id="snav-inner"></div>
+  </div>
+</div>
+
+<!-- Sub-category data for JS -->
+<script>
+/* All sub-categories for this language, passed from Django context */
+const LANG_CODE = '{{ lang_code }}';
+const NAV_SUBS  = [
+  {% for sub in nav_subs %}
+  { name: "{{ sub.name|escapejs }}", slug: "{{ sub.slug }}", url: "/{{ lang_code }}/subcategory/{{ sub.slug }}/" },
+  {% endfor %}
+];
+const NAV_CATS  = [
+  {% for cat in nav_cats %}
+  { id: {{ cat.id }}, name: "{{ cat.name|escapejs }}", url: "/{{ lang_code }}/category/{{ cat.slug }}/" },
+  {% endfor %}
+];
+const CUR_PATH  = "{{ current_path }}";
+
+let openCatId = null;
+const snav      = document.getElementById('snav');
+const snavInner = document.getElementById('snav-inner');
+
+function openSubNav(catId, catName, catUrl) {
+  openCatId = catId;
+  const all   = LANG_CODE === 'rw' ? 'Byose' : 'All';
+  const close = LANG_CODE === 'rw' ? '✕ Funga' : '✕ Close';
+  let html = `<span class="snav-label"><i class="fas fa-chevron-right fa-xs mr-1" style="color:var(--gold)"></i>${catName}</span>`;
+  html += `<a href="${catUrl}" class="snav-pill ${CUR_PATH===catUrl?'act':''}">${all}</a>`;
+  NAV_SUBS.forEach(function(s) {
+    const cat = NAV_CATS.find(c=>c.id===catId);
+    const catSlug = cat.url.split('/category/')[1].replace('/', '');
+    const url = `/${LANG_CODE}/category/${catSlug}/sub/${s.slug}/`;
+    html += `<a href="${url}" class="snav-pill ${CUR_PATH===url?'act':''}">${s.name}</a>`;
+  });
+  html += `<span class="snav-close" onclick="closeSubNav()"><i class="fas fa-times fa-xs mr-1"></i>${close}</span>`;
+  snavInner.innerHTML = html;
+  snav.classList.add('open');
+}
+
+function closeSubNav() {
+  snav.classList.remove('open');
+  openCatId = null;
+  document.querySelectorAll('.pnav-lnk').forEach(el => {
+    el.classList.remove('open');
+    const ci = el.querySelector('.ci'); if(ci) ci.style.transform='';
+  });
+}
+
+function navCatClick(e, el) {
+  e.preventDefault();
+  const catId   = parseInt(el.getAttribute('data-cid'));
+  const catName = el.getAttribute('data-cname');
+  const catUrl  = el.getAttribute('data-curl');
+
+  if (openCatId === catId) {
+    closeSubNav();
+    window.location.href = catUrl;
+    return false;
+  }
+  document.querySelectorAll('.pnav-lnk').forEach(function(l){
+    l.classList.remove('open');
+    const ci = l.querySelector('.ci'); if(ci) ci.style.transform='';
+  });
+  el.classList.add('open');
+  openSubNav(catId, catName, catUrl);
+  return false;
+}
+
+// Auto-open if on a category/sub page
+document.addEventListener('DOMContentLoaded', function() {
+  NAV_CATS.forEach(function(cat) {
+    if (CUR_PATH.startsWith(cat.url) || CUR_PATH.includes('/sub/')) {
+      const el = document.querySelector(`.pnav-lnk[data-cid="${cat.id}"]`);
+      if (el) el.classList.add('open');
+      openCatId = cat.id;
+      openSubNav(cat.id, cat.name, cat.url);
+    }
+  });
+});
+
+// Close on outside click
+document.addEventListener('click', function(e) {
+  if (!snav.contains(e.target) && !document.getElementById('pnav').contains(e.target)) {
+    closeSubNav();
+  }
+});
+</script>
+
+{% block breaking_bar %}{% endblock %}
+
+{% if messages %}
+<div class="container mt-3">
+  {% for msg in messages %}
+  <div class="alert alert-{% if msg.tags == 'error' %}danger{% else %}{{ msg.tags }}{% endif %} alert-dismissible fade show" role="alert">
+    {{ msg }}<button type="button" class="close" data-dismiss="alert"><span>&times;</span></button>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+
+<main class="container py-4">{% block content %}{% endblock %}</main>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-4 col-md-6 mb-4">
+        <div class="ft-logo mb-2">
+          <div id="ftlfb" class="ft-logo-fb" style="display:non;">The <span>Perspectives</span></div>
+        </div>
+        <p style="font-size:13px;line-height:1.7;margin-top:8px;">
+          {%if lang_code == 'rw' %}{{ site_settings.mooto_rw }}{% else %}{{ site_settings.mooto_en }}{% endif %}
+        </p>
+        <div class="ft-soc mt-3">
+            {% if site_settings.facebook_url %}
+          <a href="{{ site_settings.facebook_url }}" target="_blank"><i class="fab fa-facebook-f"></i></a>
+          {% endif %}
+          {% if site_settings.youtube_url %}
+            <a href="{{ site_settings.youtube_url }}" target="_blank"><i class="fab fa-youtube"></i></a>
+          {% endif %}
+          {% if site_settings.twitter_url %}
+            <a href="{{ site_settings.twitter_url }}" target="_blank"><i class="fab fa-twitter"></i></a>
+          {% endif %}
+          {% if site_settings.whatsapp_url %}
+            <a href="https://wa.me/{{ site_settings.whatsapp_url }}" target="_blank"><i class="fab fa-whatsapp"></i></a>
+          {% endif %}
+          {% if site_settings.instagram_url %}
+            <a href="{{ site_settings.instagram_url }}" target="_blank"><i class="fab fa-instagram"></i></a>
+          {% endif %}
+        </div>
+      </div>
+      <div class="col-lg-4 col-md-6 mb-4">
+        <h5>{% if lang_code == 'rw' %}Inzego{% else %}Sections{% endif %}</h5>
+        <ul class="ft-list">
+          {% for cat in nav_cats %}
+          <li><a href="/{{ lang_code }}/category/{{ cat.slug }}/">{{ cat.name }}</a></li>
+          {% endfor %}
+        </ul>
+      </div>
+      <div class="col-lg-4 col-md-6 mb-4">
+        <h5>{% if lang_code == 'rw' %}Aho Wadusanga{% else %}About us{% endif %}</h5>
+        <ul class="ft-list">
+          {% if site_settings.location %}
+          <li>{{ site_settings.location }}</li>
+          {% endif %}
+          {% if site_settings.email %}
+          <li><i class="fas fa-envelope"></i> <a href="mailto:{{ site_settings.email }}">{{ site_settings.email }}</a></li>
+          {% endif %}
+          {% if site_settings.phone %}
+          <li><i class="fas fa-phone"></i> <a href="tel:{{ site_settings.phone }}">{{ site_settings.phone }}</a></li>
+          {% endif %}
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="ft-btm"><div class="container">&copy; <span id="fy"></span> The Perspectives. {% if lang_code == 'rw' %}Uburenganzira bwose burarinzwe.{% else %}All rights reserved.{% endif %}</div></div>
+</footer>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+(function(){
+  const now=new Date(), lc='{{ lang_code }}';
+  const enD=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const rwD=['Ku cyumweru','Kuwa mbere','Kuwa kabiri','Kuwa gatatu','Kuwa kane','Kuwa gatanu','Ku gatandatu'];
+  const enM=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  const rwM=['Mutarama','Gashyantare','Werurwe','Mata','Gicuransi','Kamena','Nyakanga','Kanama','Nzeli','Ukwakira','Ugushyingo','Ukuboza'];
+  const dn=(lc==='rw'?rwD:enD)[now.getDay()];
+  const mn=(lc==='rw'?rwM:enM)[now.getMonth()];
+  const fd=`${now.getDate()} ${mn} ${now.getFullYear()}`;
+  const e=id=>document.getElementById(id);
+  e('tb-date')&&(e('tb-date').textContent=fd);
+  e('mday')&&(e('mday').textContent=dn);
+  e('mdt')&&(e('mdt').textContent=fd);
+  e('fy')&&(e('fy').textContent=now.getFullYear());
+})();
+</script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

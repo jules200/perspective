@@ -1,0 +1,177 @@
+{% extends "news/base.html" %}
+{% load static %}
+{% block title %}{% if lang_code == 'rw' %}Ahabanza — The Perspectives{% else %}Home — The Perspectives{% endif %}{% endblock %}
+{% block home_active %}active{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'news/css/home.css' %}">
+{% endblock %}
+
+{% block breaking_bar %}
+{% if breaking %}
+<div class="breaking-bar">
+  <div class="container d-flex align-items-center">
+    <span class="brk-tag">{% if lang_code == 'rw' %}⚡ NSHYA{% else %}⚡ BREAKING{% endif %}</span>
+    <div class="ticker-wrap">
+      <div class="ticker-track">
+        {% for a in breaking %}<a href="{{ a.get_absolute_url }}">{{ a.title }}</a>{% endfor %}
+        {% for a in breaking %}<a href="{{ a.get_absolute_url }}">{{ a.title }}</a>{% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<!-- HERO -->
+{% if featured %}
+<section class="mb-4">
+  <div class="row no-gutters">
+    <div class="col-lg-8 pr-lg-2 mb-3 mb-lg-0">
+      {% with a=featured.0 %}
+      <a href="{{ a.get_absolute_url }}" class="d-block hero-main">
+        {% if a.featured_image %}<img src="{{ a.featured_image.url }}" alt="{{ a.title }}">
+        {% else %}<div class="hero-noimg"><i class="far fa-newspaper"></i></div>{% endif %}
+        <div class="hero-ov">
+          {% if a.is_breaking %}<span class="bb mr-1">{% if lang_code == 'rw' %}NSHYA{% else %}BREAKING{% endif %}</span>{% endif %}
+          {% if a.main_category %}<div class="ctag mt-2">{{ a.main_category.name }}</div>{% endif %}
+          <h2>{{ a.title }}</h2>
+          <div class="ameta">
+            {% if a.author %}<span><i class="fas fa-user"></i> {{ a.author.get_full_name|default:a.author.username }}</span><span class="s">|</span>{% endif %}
+            <span><i class="far fa-clock"></i> {{ a.published_at|date:"M d, Y" }}</span>
+          </div>
+        </div>
+      </a>
+      {% endwith %}
+    </div>
+    <div class="col-lg-4">
+      {% for a in featured|slice:"1:5" %}
+      <a href="{{ a.get_absolute_url }}" class="hs-item d-flex">
+        {% if a.featured_image %}<img src="{{ a.featured_image.url }}" alt="">
+        {% else %}<div class="hs-noimg"><i class="far fa-newspaper"></i></div>{% endif %}
+        <div>
+          {% if a.main_category %}<div class="hs-cat">{{ a.main_category.name }}</div>{% endif %}
+          <div class="hs-title">{{ a.title }}</div>
+          <div class="hs-date">{{ a.published_at|date:"M d, Y" }}</div>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<div class="row">
+  <!-- MAIN COLUMN -->
+  <div class="col-lg-8">
+
+    <!-- LATEST -->
+    <section class="mb-5">
+      <div class="sec-hd">
+        <h2><i class="fas fa-bolt fa-xs mr-2"></i>{% if lang_code == 'rw' %}Amakuru Mashya{% else %}Latest News{% endif %}</h2>
+        <div class="sec-hd-bar"></div>
+      </div>
+      <div class="row">
+        {% for a in latest %}
+        <div class="col-md-6 mb-4">
+          <div class="ac h-100">
+            <div class="ac-img"><a href="{{ a.get_absolute_url }}">
+              {% if a.featured_image %}<img src="{{ a.featured_image.url }}" alt="{{ a.title }}">
+              {% else %}<div class="ac-noimg"><i class="far fa-newspaper"></i></div>{% endif %}
+            </a></div>
+            <div class="ac-body">
+              {% if a.main_category %}<a href="{{ a.main_category.get_absolute_url }}" class="ctag">{{ a.main_category.name }}</a>{% endif %}
+              {% if a.sub_category %}<a href="{{ a.sub_category.get_absolute_url }}" class="stag"> › {{ a.sub_category.name }}</a>{% endif %}
+              <h5><a href="{{ a.get_absolute_url }}">{{ a.title }}</a></h5>
+              {% if a.summary %}<p>{{ a.summary|truncatechars:100 }}</p>{% endif %}
+              <div class="ameta">
+                {% if a.author %}<span><i class="fas fa-user-circle"></i> {{ a.author.get_full_name|default:a.author.username }}</span><span class="s">|</span>{% endif %}
+                <span><i class="far fa-calendar-alt"></i> {{ a.published_at|date:"M d, Y" }}</span>
+                <span class="s">|</span><span><i class="far fa-comment"></i> {{ a.comment_count }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+          <div class="no-articles">
+            <i class="far fa-newspaper"></i>
+            <p>{% if lang_code == 'rw' %}Nta makuru arahari muri iri rurimi. Banza winjize amakuru mu buryo bwa admin.{% else %}No articles yet. Add articles via the admin panel.{% endif %}</p>
+            <a href="/admin/" class="admin-link">{% if lang_code == 'rw' %}Injira mu Admin{% else %}Go to Admin{% endif %}</a>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </section>
+
+    <!-- PER-CATEGORY BLOCKS — uses cat_blocks: list of (category, articles) tuples -->
+    {% for cat, arts in cat_blocks %}
+    <section class="mb-5 cat-blocks">
+      <div class="sec-hd">
+        <h2>{{ cat.name }}</h2>
+        <div class="sec-hd-bar"></div>
+        <a href="{{ cat.get_absolute_url }}" class="sec-hd-all">{% if lang_code == 'rw' %}Reba Byose <i class="fas fa-arrow-right fa-xs"></i>{% else %}View All <i class="fas fa-arrow-right fa-xs"></i>{% endif %}</a>
+      </div>
+      <div class="row">
+        {% for a in arts %}
+        <div class="col-md-6 mb-3">
+          <div class="ac h-100">
+            <div class="ac-img"><a href="{{ a.get_absolute_url }}">
+              {% if a.featured_image %}<img src="{{ a.featured_image.url }}" alt="{{ a.title }}">
+              {% else %}<div class="ac-noimg"><i class="far fa-newspaper"></i></div>{% endif %}
+            </a></div>
+            <div class="ac-body">
+              {% if a.sub_category %}<a href="{{ a.sub_category.get_absolute_url }}" class="ctag">{{ a.sub_category.name }}</a>{% endif %}
+              <h5><a href="{{ a.get_absolute_url }}">{{ a.title }}</a></h5>
+              <div class="ameta"><i class="far fa-calendar-alt"></i> {{ a.published_at|date:"M d, Y" }}</div>
+            </div>
+          </div>
+        </div>
+        {% empty %}
+        <div class="col-12"><p class="empty-msg">{% if lang_code == 'rw' %}Nta makuru arahari muri {{ cat.name }}.{% else %}No articles yet in {{ cat.name }}.{% endif %}</p></div>
+        {% endfor %}
+      </div>
+    </section>
+    {% endfor %}
+
+  </div>
+
+  <!-- SIDEBAR -->
+  <div class="col-lg-4">
+    <div class="sw">
+      <div class="sw-hd"><i class="fas fa-fire"></i>{% if lang_code == 'rw' %}Ibigezweho{% else %}Trending{% endif %}</div>
+      <ul class="trend-list">
+        {% for a in trending %}
+        <li>
+          <span class="tnum">{{ forloop.counter }}</span>
+          <div>
+            {% if a.main_category %}<div class="tcat">{{ a.main_category.name }}</div>{% endif %}
+            <div class="ttitle"><a href="{{ a.get_absolute_url }}">{{ a.title }}</a></div>
+            <div class="tdate"><i class="far fa-clock fa-xs mr-1"></i>{{ a.published_at|date:"M d, Y" }}</div>
+          </div>
+        </li>
+        {% empty %}
+        <li class="empty">{% if lang_code == 'rw' %}Nta makuru arahari.{% else %}No trending articles yet.{% endif %}</li>
+        {% endfor %}
+      </ul>
+    </div>
+    <div class="sw">
+      <div class="sw-hd"><i class="fas fa-th-large"></i>{% if lang_code == 'rw' %}Inzego{% else %}Sections{% endif %}</div>
+      <ul class="sw-list">
+        {% for cat in cats %}
+        <li><a href="{{ cat.get_absolute_url }}" onclick="openSubNav({{ cat.id }},'{{ cat.name }}','{{ cat.get_absolute_url }}');return false;">{{ cat.name }}<i class="fas fa-chevron-right fa-xs"></i></a></li>
+        {% endfor %}
+      </ul>
+    </div>
+    <div class="sw">
+      <div class="sw-hd"><i class="fas fa-list"></i>{% if lang_code == 'rw' %}Inyito z'Inyandiko{% else %}Topics{% endif %}</div>
+      <ul class="sw-list">
+        {% for sub in subs %}
+        <li><a href="{{ sub.get_absolute_url }}">{{ sub.name }}<i class="fas fa-chevron-right fa-xs"></i></a></li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+</div>
+{% endblock %}

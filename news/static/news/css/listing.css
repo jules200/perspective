@@ -1,0 +1,23 @@
+/* Listing page styles */
+
+.ac h5 a {
+    color: inherit;
+}
+
+.no-articles-listing {
+    text-align: center;
+    padding: 60px;
+    background: var(--wh);
+    border: 1px solid var(--bdr);
+}
+
+.no-articles-listing i {
+    font-size: 48px;
+    color: var(--bdr);
+    display: block;
+    margin-bottom: 14px;
+}
+
+.no-articles-listing p {
+    color: var(--mg);
+}

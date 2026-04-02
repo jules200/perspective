@@ -1,0 +1,139 @@
+/* Article detail page styles */
+
+.byline a.main-cat {
+    color: var(--navy);
+    font-weight: 700;
+}
+
+.byline .sep {
+    color: var(--bdr);
+    margin: 0 4px;
+}
+
+.byline a.sub-cat {
+    color: var(--mg);
+}
+
+.tags-section {
+    margin: 22px 0;
+    padding: 14px 18px;
+    background: #f0f3fa;
+    border: 1px solid var(--bdr);
+    border-radius: 2px;
+}
+
+.tags-label {
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--mg);
+    margin-right: 10px;
+}
+
+.tag-main {
+    display: inline-block;
+    background: var(--navy);
+    color: var(--gold);
+    padding: 4px 13px;
+    font-size: 12px;
+    font-weight: 700;
+    margin: 3px;
+    border-radius: 2px;
+}
+
+.tag-sub {
+    display: inline-block;
+    background: var(--gold);
+    color: var(--navy-dk);
+    padding: 4px 13px;
+    font-size: 12px;
+    font-weight: 700;
+    margin: 3px;
+    border-radius: 2px;
+}
+
+.comments-section {
+    margin-top: 38px;
+}
+
+.comments-sec-hd i {
+    color: var(--gold);
+}
+
+.comment-name {
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--navy);
+}
+
+.comment-date {
+    font-size: 12px;
+    color: var(--mg);
+}
+
+.comment-body {
+    font-size: 15px;
+    margin-top: 10px;
+}
+
+.no-comments {
+    background: var(--wh);
+    border: 1px solid var(--bdr);
+    padding: 32px;
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.no-comments i {
+    font-size: 40px;
+    color: var(--bdr);
+    display: block;
+    margin-bottom: 12px;
+}
+
+.no-comments p {
+    color: var(--mg);
+    margin: 0;
+}
+
+.comment-form h4 i {
+    color: var(--gold);
+}
+
+.comment-form p {
+    font-size: 13px;
+    color: var(--mg);
+    margin-bottom: 20px;
+}
+
+.form-label {
+    font-weight: 700;
+    font-size: 13px;
+    color: var(--navy);
+}
+
+.related-section {
+    margin-top: 42px;
+    padding-top: 22px;
+    border-top: 3px solid var(--navy);
+}
+
+.related h5 a {
+    color: inherit;
+}
+
+.sidebar-sticky {
+    position: sticky;
+    top: 72px;
+}
+
+.trending-empty {
+    padding: 16px;
+    color: var(--mg);
+    font-size: 13px;
+}
+
+.share-sidebar .sbtn {
+    padding: 11px;
+}

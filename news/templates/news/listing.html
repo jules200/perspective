@@ -1,0 +1,116 @@
+{% extends "news/base.html" %}
+{% load static %}
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'news/css/listing.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+  <div class="col-12">
+    <div class="lst-hdr">
+      <div class="bc">
+        <a href="/{{ lang_code }}/">{% if lang_code == 'rw' %}Ahabanza{% else %}Home{% endif %}</a>
+        {% if active_cat %}<span class="bs">›</span><a href="{{ active_cat.get_absolute_url }}">{{ active_cat.name }}</a>{% endif %}
+        {% if active_sub %}<span class="bs">›</span><span>{{ active_sub.name }}</span>{% endif %}
+      </div>
+      <h1>{{ page_title }}</h1>
+    </div>
+
+    <!-- Sub-category filter pills (always shown — independent of main cat) -->
+    {% if subs %}
+    <div class="sub-filter-bar">
+      <div class="sfpills">
+        {% if active_cat %}
+        <!-- When browsing a main category, show all sub-cats as filters -->
+        <a href="{{ active_cat.get_absolute_url }}" class="sfpill {% if not active_sub %}act{% endif %}">
+          {% if lang_code == 'rw' %}Byose{% else %}All{% endif %}
+        </a>
+        {% for sub in subs %}
+        <a href="/{{ lang_code }}/category/{{ active_cat.slug }}/sub/{{ sub.slug }}/"
+           class="sfpill {% if active_sub.pk == sub.pk %}act{% endif %}">
+          {{ sub.name }}
+        </a>
+        {% endfor %}
+        {% else %}
+        <!-- When browsing a standalone sub-category, show main cats as cross-filters -->
+        {% for cat in cats %}
+        <a href="/{{ lang_code }}/category/{{ cat.slug }}/sub/{{ active_sub.slug }}/"
+           class="sfpill">
+          {{ cat.name }}
+        </a>
+        {% endfor %}
+        {% endif %}
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-lg-8">
+    <div class="row">
+      {% for a in articles %}
+      <div class="col-md-6 mb-4">
+        <div class="ac h-100">
+          <div class="ac-img"><a href="{{ a.get_absolute_url }}">
+            {% if a.featured_image %}<img src="{{ a.featured_image.url }}" alt="{{ a.title }}">
+            {% else %}<div class="ac-noimg"><i class="far fa-newspaper"></i></div>{% endif %}
+          </a></div>
+          <div class="ac-body">
+            {% if a.main_category %}<a href="{{ a.main_category.get_absolute_url }}" class="ctag">{{ a.main_category.name }}</a>{% endif %}
+            {% if a.sub_category %}<a href="{{ a.sub_category.get_absolute_url }}" class="stag"> › {{ a.sub_category.name }}</a>{% endif %}
+            <h5><a href="{{ a.get_absolute_url }}">{{ a.title }}</a></h5>
+            {% if a.summary %}<p>{{ a.summary|truncatechars:110 }}</p>{% endif %}
+            <div class="ameta">
+              {% if a.author %}<span><i class="fas fa-user-circle"></i> {{ a.author.get_full_name|default:a.author.username }}</span><span class="s">|</span>{% endif %}
+              <span><i class="far fa-calendar-alt"></i> {{ a.published_at|date:"M d, Y" }}</span>
+              <span class="s">|</span><span><i class="far fa-comment"></i> {{ a.comment_count }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% empty %}
+      <div class="col-12">
+        <div class="no-articles-listing">
+          <i class="far fa-newspaper"></i>
+          <p>{% if lang_code == 'rw' %}Nta makuru arahari muri iyi nzego.{% else %}No articles found in this section.{% endif %}</p>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- SIDEBAR -->
+  <div class="col-lg-4">
+    {% if subs %}
+    <div class="sw mb-4">
+      <div class="sw-hd"><i class="fas fa-list"></i>{% if lang_code == 'rw' %}Inyito{% else %}Topics{% endif %}</div>
+      <ul class="sw-list">
+        {% for sub in subs %}
+        <li>
+          <a href="{% if active_cat %}/{{ lang_code }}/category/{{ active_cat.slug }}/sub/{{ sub.slug }}/{% else %}{{ sub.get_absolute_url }}{% endif %}"
+             class="{% if active_sub.pk == sub.pk %}act{% endif %}">
+            {{ sub.name }}<i class="fas fa-chevron-right fa-xs"></i>
+          </a>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% endif %}
+    <div class="sw">
+      <div class="sw-hd"><i class="fas fa-th-large"></i>{% if lang_code == 'rw' %}Inzego{% else %}Sections{% endif %}</div>
+      <ul class="sw-list">
+        {% for cat in cats %}
+        <li>
+          <a href="{{ cat.get_absolute_url }}" class="{% if active_cat.pk == cat.pk %}act{% endif %}">
+            {{ cat.name }}<i class="fas fa-chevron-right fa-xs"></i>
+          </a>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+</div>
+{% endblock %}

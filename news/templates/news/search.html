@@ -1,0 +1,73 @@
+{% extends "news/base.html" %}
+{% block title %}{% if lang_code == 'rw' %}Shakisha{% else %}Search{% endif %}{% if query %} — "{{ query }}"{% endif %}{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'news/css/search.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="row">
+  <div class="col-lg-8">
+    <div class="search-hdr">
+      <div>{% if lang_code == 'rw' %}Gushakisha{% else %}Search{% endif %}</div>
+      {% if query %}<h1>"{{ query }}"</h1><p class="search-results"><strong>{{ count }}</strong> {% if lang_code == 'rw' %}ibisubizo{% else %}result{% if count != 1 %}s{% endif %}{% endif %}</p>{% endif %}
+      <div class="scope-note">
+        <i class="fas fa-filter"></i>
+        {% if lang_code == 'rw' %}Gushakisha guzuzuzwa mu makuru y'<strong>Ikinyarwanda</strong> gusa.{% else %}Search scoped to <strong>English</strong> articles only.{% endif %}
+      </div>
+      <form action="/{{ lang_code }}/search/" method="get" class="mt-3">
+        <div class="input-group">
+          <input type="text" name="q" class="form-control form-control-lg"
+                 placeholder="{% if lang_code == 'rw' %}Andika amagambo ushaka...{% else %}Search articles...{% endif %}"
+                 value="{{ query }}">
+          <div class="input-group-append">
+            <button type="submit" class="btn btn-lg btn-search">
+              <i class="fas fa-search mr-2"></i>{% if lang_code == 'rw' %}Shakisha{% else %}Search{% endif %}
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    {% if query %}{% if articles %}
+    {% for a in articles %}
+    <div class="sr-card">
+      <div class="sr-thumb">{% if a.featured_image %}<a href="{{ a.get_absolute_url }}"><img src="{{ a.featured_image.url }}" alt=""></a>
+      {% else %}<a href="{{ a.get_absolute_url }}" class="sr-noimg d-flex"><i class="far fa-newspaper"></i></a>{% endif %}</div>
+      <div class="sr-body">
+        {% if a.main_category %}<a href="{{ a.main_category.get_absolute_url }}" class="ctag">{{ a.main_category.name }}</a>{% endif %}
+        {% if a.sub_category %}<a href="{{ a.sub_category.get_absolute_url }}" class="stag"> › {{ a.sub_category.name }}</a>{% endif %}
+        <h4 class="article-title"><a href="{{ a.get_absolute_url }}">{{ a.title }}</a></h4>
+        {% if a.summary %}<p class="article-summary">{{ a.summary|truncatechars:130 }}</p>{% endif %}
+        <div class="ameta">
+          {% if a.author %}<span><i class="fas fa-user-circle"></i> {{ a.author.get_full_name|default:a.author.username }}</span><span class="s">|</span>{% endif %}
+          <span><i class="far fa-calendar-alt"></i> {{ a.published_at|date:"M d, Y" }}</span>
+          <span class="s">|</span><span><i class="far fa-eye"></i> {{ a.views }}</span>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+    {% else %}
+    <div class="no-results">
+      <i class="fas fa-search"></i>
+      <h4>{% if lang_code == 'rw' %}Nta bisubizo byabonetse{% else %}No results found{% endif %}</h4>
+    </div>
+    {% endif %}{% endif %}
+  </div>
+
+  <div class="col-lg-4">
+    <div class="sw">
+      <div class="sw-hd"><i class="fas fa-th-large"></i>{% if lang_code == 'rw' %}Inzego{% else %}Sections{% endif %}</div>
+      <ul class="sw-list">
+        {% for cat in cats %}<li><a href="{{ cat.get_absolute_url }}">{{ cat.name }}<i class="fas fa-chevron-right fa-xs"></i></a></li>{% endfor %}
+      </ul>
+    </div>
+    <div class="sw">
+      <div class="sw-hd"><i class="fas fa-list"></i>{% if lang_code == 'rw' %}Inyito{% else %}Topics{% endif %}</div>
+      <ul class="sw-list">
+        {% for sub in subs %}<li><a href="{{ sub.get_absolute_url }}">{{ sub.name }}<i class="fas fa-chevron-right fa-xs"></i></a></li>{% endfor %}
+      </ul>
+    </div>
+  </div>
+</div>
+{% endblock %}

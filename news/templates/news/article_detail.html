@@ -1,0 +1,170 @@
+{% extends "news/base.html" %}
+{% load static %}
+{% block title %}{{ article.title }}{% endblock %}
+{% block extra_head %}
+<meta name="description" content="{{ article.summary }}">
+<meta property="og:title" content="{{ article.title }}">
+<meta property="og:description" content="{{ article.summary }}">
+{% if article.featured_image %}<meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{{ article.featured_image.url }}">{% endif %}
+<link rel="stylesheet" href="{% static 'news/css/article_detail.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="row">
+  <div class="col-lg-8">
+    <article>
+      <!-- BREADCRUMB -->
+      <div class="bc-bar">
+        <a href="/{{ lang_code }}/">{% if lang_code == 'rw' %}Ahabanza{% else %}Home{% endif %}</a>
+        <span class="bs">›</span>
+        {% if article.main_category %}<a href="{{ article.main_category.get_absolute_url }}">{{ article.main_category.name }}</a>{% endif %}
+        {% if article.sub_category %}<span class="bs">›</span><a href="{{ article.sub_category.get_absolute_url }}">{{ article.sub_category.name }}</a>{% endif %}
+      </div>
+
+      <!-- BADGES -->
+      <div class="mb-2">
+        {% if article.is_breaking %}<span class="bb mr-1">{% if lang_code == 'rw' %}NSHYA{% else %}BREAKING{% endif %}</span>{% endif %}
+        {% if article.is_trending %}<span class="bt mr-1">{% if lang_code == 'rw' %}IGEZWEHO{% else %}TRENDING{% endif %}</span>{% endif %}
+        {% if article.is_featured %}<span class="bf">{% if lang_code == 'rw' %}IBANZE{% else %}FEATURED{% endif %}</span>{% endif %}
+      </div>
+
+      <h1 class="art-title">{{ article.title }}</h1>
+
+      <!-- BYLINE -->
+      <div class="byline">
+        {% if article.main_category %}
+        <span><i class="fas fa-folder-open"></i>
+          <a href="{{ article.main_category.get_absolute_url }}" class="main-cat">{{ article.main_category.name }}</a>
+          {% if article.sub_category %}<span class="sep">/</span><a href="{{ article.sub_category.get_absolute_url }}" class="sub-cat">{{ article.sub_category.name }}</a>{% endif %}
+        </span>
+        {% endif %}
+        {% if article.author %}<span><i class="fas fa-user-edit"></i><span class="by-author">{{ article.author.get_full_name|default:article.author.username }}</span></span>{% endif %}
+        <span><i class="far fa-calendar-alt"></i> {{ article.published_at|date:"F j, Y" }}</span>
+        <span><i class="far fa-clock"></i> {{ article.published_at|date:"H:i" }}</span>
+        <span><i class="far fa-eye"></i> {{ article.views }}</span>
+        <span><i class="far fa-comment"></i> {{ article.comment_count }}</span>
+      </div>
+
+      {% if article.featured_image %}
+      <div class="art-feat">
+        <img src="{{ article.featured_image.url }}" alt="{{ article.title }}">
+        {% if article.image_caption %}<div class="icap"><i class="fas fa-camera mr-1"></i>{{ article.image_caption }}</div>{% endif %}
+      </div>
+      {% endif %}
+
+      {% if article.summary %}<div class="art-summary">{{ article.summary }}</div>{% endif %}
+
+      <div class="art-content">{% autoescape off %}{{ article.content }}{% endautoescape %}</div>
+
+      <!-- TAGS -->
+      <div class="tags-section">
+        <span class="tags-label">{% if lang_code == 'rw' %}Inzego:{% else %}Filed under:{% endif %}</span>
+        {% if article.main_category %}<a href="{{ article.main_category.get_absolute_url }}" class="tag-main">{{ article.main_category.name }}</a>{% endif %}
+        {% if article.sub_category %}<a href="{{ article.sub_category.get_absolute_url }}" class="tag-sub">{{ article.sub_category.name }}</a>{% endif %}
+      </div>
+
+      <!-- SHARE -->
+      <div class="share-bar">
+        <span class="share-lbl"><i class="fas fa-share-alt mr-1"></i>{% if lang_code == 'rw' %}Sangira:{% else %}Share:{% endif %}</span>
+        <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri|urlencode }}" target="_blank" rel="noopener" class="sbtn fb"><i class="fab fa-facebook-f"></i> Facebook</a>
+        <a href="https://api.whatsapp.com/send?text={{ article.title|urlencode }}%20{{ request.build_absolute_uri|urlencode }}" target="_blank" rel="noopener" class="sbtn wa"><i class="fab fa-whatsapp"></i> WhatsApp</a>
+        <a href="https://twitter.com/intent/tweet?url={{ request.build_absolute_uri|urlencode }}&text={{ article.title|urlencode }}" target="_blank" rel="noopener" class="sbtn tw"><i class="fab fa-twitter"></i> X</a>
+      </div>
+    </article>
+
+    <!-- COMMENTS -->
+    <section class="comments-section">
+      <div class="sec-hd">
+        <h2 class="comments-sec-hd"><i class="far fa-comments fa-xs mr-2"></i>{% if lang_code == 'rw' %}Ibitekerezo{% else %}Comments{% endif %} ({{ article.comment_count }})</h2>
+        <div class="sec-hd-bar"></div>
+      </div>
+      {% for c in comments %}
+      <div class="cmt-item">
+        <div class="d-flex align-items-center mb-2">
+          <div class="cmt-av">{{ c.name|first|upper }}</div>
+          <div>
+            <div class="comment-name">{{ c.name }}</div>
+            <div class="comment-date">{{ c.created_at|date:"F j, Y · H:i" }}</div>
+          </div>
+        </div>
+        <div class="comment-body">{{ c.body }}</div>
+      </div>
+      {% empty %}
+      <div class="no-comments">
+        <i class="far fa-comment-dots"></i>
+        <p>{% if lang_code == 'rw' %}Nta bitekerezo bihari. Banza usome!{% else %}No comments yet. Be the first!{% endif %}</p>
+      </div>
+      {% endfor %}
+
+      <div class="cmt-form">
+        <h4><i class="far fa-edit mr-2"></i>{% if lang_code == 'rw' %}Siga Igitekerezo{% else %}Leave a Comment{% endif %}</h4>
+        <p>{% if lang_code == 'rw' %}Igitekerezo cyawe kizasuzumwa mbere yo gusohoka.{% else %}Your comment will be reviewed before publishing.{% endif %}</p>
+        <form method="post" action="{{ article.get_absolute_url }}">
+          {% csrf_token %}
+          <div class="row">
+            <div class="col-md-6 form-group">
+              <label class="form-label">{% if lang_code == 'rw' %}Izina *{% else %}Name *{% endif %}</label>{{ form.name }}
+            </div>
+            <div class="col-md-6 form-group">
+              <label class="form-label">{% if lang_code == 'rw' %}Imeli *{% else %}Email *{% endif %}</label>{{ form.email }}
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">{% if lang_code == 'rw' %}Igitekerezo *{% else %}Comment *{% endif %}</label>{{ form.body }}
+          </div>
+          <button type="submit" class="btn-cmt"><i class="fas fa-paper-plane mr-2"></i>{% if lang_code == 'rw' %}Ohereza{% else %}Submit Comment{% endif %}</button>
+        </form>
+      </div>
+    </section>
+
+    {% if related %}
+    <div class="related-section">
+      <div class="sec-hd"><h2>{% if lang_code == 'rw' %}Amakuru Afitanye Isano{% else %}Related Articles{% endif %}</h2><div class="sec-hd-bar"></div></div>
+      <div class="row">
+        {% for a in related %}
+        <div class="col-md-6 mb-4">
+          <div class="ac h-100">
+            <div class="ac-img"><a href="{{ a.get_absolute_url }}">{% if a.featured_image %}<img src="{{ a.featured_image.url }}" alt="{{ a.title }}">{% else %}<div class="ac-noimg"><i class="far fa-newspaper"></i></div>{% endif %}</a></div>
+            <div class="ac-body">
+              {% if a.main_category %}<div class="ctag">{{ a.main_category.name }}</div>{% endif %}
+              <h5><a href="{{ a.get_absolute_url }}">{{ a.title }}</a></h5>
+              <div class="ameta"><i class="far fa-calendar-alt"></i> {{ a.published_at|date:"M d, Y" }}</div>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- SIDEBAR -->
+  <div class="col-lg-4">
+    <div class="sw sidebar-sticky">
+      <div class="sw-hd"><i class="fas fa-fire"></i>{% if lang_code == 'rw' %}Amakuru Akomeye{% else %}Trending Now{% endif %}</div>
+      <ul class="trend-list">
+        {% for a in trending %}
+        <li>
+          <span class="tnum">{{ forloop.counter }}</span>
+          <div>
+            {% if a.main_category %}<div class="tcat">{{ a.main_category.name }}</div>{% endif %}
+            <div class="ttitle"><a href="{{ a.get_absolute_url }}">{{ a.title }}</a></div>
+            <div class="tdate"><i class="far fa-eye fa-xs mr-1"></i>{{ a.views }} · {{ a.published_at|date:"M d" }}</div>
+          </div>
+        </li>
+        {% empty %}
+        <li class="trending-empty">{% if lang_code == 'rw' %}Nta makuru arahari.{% else %}No trending articles.{% endif %}</li>
+        {% endfor %}
+      </ul>
+    </div>
+    <div class="sw mt-3">
+      <div class="sw-hd"><i class="fas fa-share-alt"></i>{% if lang_code == 'rw' %}Sangira{% else %}Share{% endif %}</div>
+      <div class="sw-body share-sidebar">
+        <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri|urlencode }}" target="_blank" class="sbtn fb d-block text-center mb-2"><i class="fab fa-facebook-f mr-2"></i>Facebook</a>
+        <a href="https://api.whatsapp.com/send?text={{ article.title|urlencode }}%20{{ request.build_absolute_uri|urlencode }}" target="_blank" class="sbtn wa d-block text-center mb-2"><i class="fab fa-whatsapp mr-2"></i>WhatsApp</a>
+        <a href="https://twitter.com/intent/tweet?url={{ request.build_absolute_uri|urlencode }}&text={{ article.title|urlencode }}" target="_blank" class="sbtn tw d-block text-center"><i class="fab fa-twitter mr-2"></i>X (Twitter)</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
