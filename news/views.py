@@ -40,7 +40,8 @@ def switch_lang(request):
         parts = next_url.strip('/').split('/', 1)
         if parts and parts[0] in VALID_LANGS:
             rest = parts[1] if len(parts) > 1 else ''
-            next_url = f'/{code}/{rest}'
+            next_url = f'/{code}'
+            # next_url = f'/{code}/{rest}'
         else:
             next_url = f'/{code}/'
         return redirect(next_url)
