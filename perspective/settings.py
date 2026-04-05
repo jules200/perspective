@@ -4,7 +4,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-theperspectives-rw-2026'
 
 
-DEBUG = True
+DEBUG = False
 if DEBUG is False:
     ALLOWED_HOSTS = ['3.71.208.193', 'perspectiveshub.com', 'www.perspectiveshub.com']
     HOST = "https://perspectiveshub.com"
@@ -59,14 +59,12 @@ if DEBUG is False:
     # # TODO Attendance Server
     DATABASES = {
         'default': {
-            'ENGINE': 'django.db.backends.mysql',
-            'NAME': 'perspective',
-            'USER': 'perspective',
-            'PORT': '3306',
-            'PASSWORD': 'Perspective@hub',
-            'OPTIONS': {  
-                'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"  
-            }
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': 'perspective',         # Your PostgreSQL database name
+            'USER': 'perspective',         # Your PostgreSQL user
+            'PASSWORD': 'Perspective@hub', # User password
+            'HOST': 'localhost',           # Or your DB host
+            'PORT': '5432',                # Default PostgreSQL port
         }
     }
 else:

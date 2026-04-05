@@ -103,7 +103,7 @@ class Article(models.Model):
     author        = models.ForeignKey(User, on_delete=models.SET_NULL,
                                       null=True, blank=True, related_name='articles')
 
-    summary        = models.TextField(max_length=600, blank=True)
+    summary        = models.TextField(max_length=600, blank=True, verbose_name='Lead')
     content        = models.TextField()
     featured_image = models.ImageField(upload_to='articles/%Y/%m/', blank=True, null=True)
     image_caption  = models.CharField(max_length=250, blank=True)
