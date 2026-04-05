@@ -60,10 +60,10 @@ if DEBUG is False:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.mysql',
-            'NAME': 'energyradio',
-            'USER': 'energy',
+            'NAME': 'perspective',
+            'USER': 'perspective',
             'PORT': '3306',
-            'PASSWORD': 'Energy@radio12',
+            'PASSWORD': 'Perspective@hub',
             'OPTIONS': {  
                 'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"  
             }
@@ -90,7 +90,6 @@ USE_I18N = False   # We handle language via URL prefix, not Django i18n
 USE_TZ = True
 
 STATIC_URL  = '/static/'
-STATIC_ROOT = BASE_DIR / 'staticfiles'
 MEDIA_URL   = '/media/'
 MEDIA_ROOT  = BASE_DIR / 'media'
 
