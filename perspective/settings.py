@@ -7,7 +7,7 @@ SECRET_KEY = 'django-insecure-theperspectives-rw-2026'
 DEBUG = False
 if DEBUG is False:
     ALLOWED_HOSTS = ['3.71.208.193', 'perspectiveshub.com', 'www.perspectiveshub.com']
-    HOST = "https://perspectiveshub.com"
+    HOST = "perspectiveshub.com"
 else:
     ALLOWED_HOSTS = ['*']
     HOST = "http://127.0.0.1:8000/"
