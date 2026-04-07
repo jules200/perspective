@@ -194,18 +194,18 @@ a:hover{color:var(--navy);}
 .bc-bar{display:flex;gap:6px;align-items:center;font-size:12px;margin-bottom:14px;flex-wrap:wrap;}
 .bc-bar a{color:var(--navy);font:600 11px/1 inherit;letter-spacing:.8px;text-transform:uppercase;}
 .bc-bar .bs{color:var(--bdr);}
-.byline{display:flex;flex-wrap:wrap;gap:16px;align-items:center;padding:12px 0;border-top:1px solid var(--bdr);border-bottom:1px solid var(--bdr);margin-bottom:22px;font-size:13px;color:var(--mg);}
+.byline{display:flex;gap:24px;align-items:center;padding:16px 0;border-top:1px solid var(--bdr);border-bottom:1px solid var(--bdr);margin-bottom:12px;font-size:13px;color:var(--mg);justify-content:space-between;}
 .byline i{color:var(--navy);margin-right:4px;font-size:12px;}
 .by-author{font-weight:700;color:var(--dg);}
-.art-feat{margin-bottom:26px;}
-.art-feat img{width:100%;max-height:480px;object-fit:cover;}
-.art-feat .icap{font-size:12px;color:var(--mg);padding:6px 0;font-style:italic;border-bottom:1px solid var(--bdr);}
+.art-feat{margin-bottom:8px;}
+.art-feat img{width:100%;max-height:480px;object-fit:cover;margin-bottom:8px;}
+.art-feat .icap{font-size:12px;color:var(--mg);padding:0;font-style:italic;display:flex;align-items:center;gap:6px;}
 .art-summary{background:#f0f3fa;border-left:4px solid var(--navy);padding:16px 20px;margin-bottom:26px;font:400 italic 17px/1.65 'Merriweather',serif;color:#444;}
 .art-content{font-size:17px;line-height:1.85;color:#2a2a2a;}
 .art-content p{margin-bottom:1.3em;}
 .art-content h2,.art-content h3{font-family:'Merriweather',serif;color:var(--navy);margin:1.6em 0 .8em;}
 .art-content blockquote{border-left:4px solid var(--gold);padding:12px 20px;margin:24px 0;background:#fafaf4;font-style:italic;font-family:'Merriweather',serif;}
-.share-bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:16px 0;border-top:1px solid var(--bdr);border-bottom:1px solid var(--bdr);margin:24px 0;}
+.share-bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:16px 0;margin:24px 0;}
 .share-lbl{font-size:11px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--mg);}
 .sbtn{display:inline-flex;align-items:center;gap:7px;padding:8px 16px;font-size:13px;font-weight:700;color:#fff;border:none;border-radius:2px;cursor:pointer;transition:opacity .2s;}
 .sbtn:hover{opacity:.85;color:#fff;}

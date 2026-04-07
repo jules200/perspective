@@ -1,6 +1,25 @@
 from django.contrib import admin
+from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+from django.contrib.auth.models import User
 from django_summernote.admin import SummernoteModelAdmin
-from .models import Language, MainCategory, SubCategory, Article, Comment, SiteSettings
+from .models import Language, MainCategory, SubCategory, Article, Comment, SiteSettings, UserProfile
+
+
+class UserProfileInline(admin.StackedInline):
+    """Inline profile editor for User admin."""
+    model = UserProfile
+    fields = ('profile_pic', 'bio')
+    extra = 0
+
+
+class UserAdmin(BaseUserAdmin):
+    """Extended User admin with profile picture."""
+    inlines = (UserProfileInline,)
+
+
+# Re-register UserAdmin
+admin.site.unregister(User)
+admin.site.register(User, UserAdmin)
 
 
 @admin.register(Language)

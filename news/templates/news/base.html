@@ -95,6 +95,11 @@
           </a>
         </li>
         {% endfor %}
+        <li class="nav-item">
+          <a class="nav-link pnav-lnk" href="#">
+            {% if lang_code == 'rw' %}Inyandiko z'Ubushakashatsi{% else %}Research Paper{% endif %}
+          </a>
+        </li>
       </ul>
       <form class="nav-search" action="/{{ lang_code }}/search/" method="get">
         <input type="text" name="q"
@@ -254,13 +259,13 @@ document.addEventListener('click', function(e) {
         <h5>{% if lang_code == 'rw' %}Aho Wadusanga{% else %}About us{% endif %}</h5>
         <ul class="ft-list">
           {% if site_settings.location %}
-          <li>{{ site_settings.location }}</li>
+          <li><b><i class="fas fa-map-marker-alt" style="margin-right: 5px; color: #f5c400;"></i></b> {{ site_settings.location }}</li>
           {% endif %}
           {% if site_settings.email %}
-          <li><i class="fas fa-envelope"></i> <a href="mailto:{{ site_settings.email }}">{{ site_settings.email }}</a></li>
+          <li><b><i class="fas fa-envelope" style="margin-right: 5px; color: #f5c400;"></i></b> <a href="mailto:{{ site_settings.email }}">{{ site_settings.email }}</a></li>
           {% endif %}
           {% if site_settings.phone %}
-          <li><i class="fas fa-phone"></i> <a href="tel:{{ site_settings.phone }}">{{ site_settings.phone }}</a></li>
+          <li><b><i class="fas fa-phone" style="margin-right: 5px; color: #f5c400;"></i></b> <a href="tel:{{ site_settings.phone }}">{{ site_settings.phone }}</a></li>
           {% endif %}
         </ul>
       </div>

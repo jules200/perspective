@@ -69,7 +69,7 @@ def home(request, lang_code):
         'featured':     list(qs.filter(is_featured=True)[:5]),
         'breaking':     list(qs.filter(is_breaking=True)[:6]),
         'trending':     list(qs.filter(is_trending=True)[:8]),
-        'latest':       list(qs[:12]),
+        'latest':       list(qs[:6]),
     })
 
 
