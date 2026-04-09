@@ -4,10 +4,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-theperspectives-rw-2026'
 
 
-DEBUG = True
+DEBUG = False  # Set to False in production, True for local development
 if DEBUG is False:
-    ALLOWED_HOSTS = ['*']
-    # ALLOWED_HOSTS = ['3.71.208.193', 'perspectiveshub.com', 'www.perspectiveshub.com']
+    ALLOWED_HOSTS = ['perspectiveshub.com', 'www.perspectiveshub.com']
     HOST = "https://perspectiveshub.com"
 else:
     ALLOWED_HOSTS = ['*']
