@@ -1,6 +1,6 @@
 {% extends "news/base.html" %}
 {% load static %}
-{% block title %}{% if lang_code == 'rw' %}Inyandiko z'Ubushakashatsi{% else %}Research Papers{% endif %}{% endblock %}
+{% block title %}The perspectives - {% if lang_code == 'rw' %}Inyandiko z'Ubushakashatsi{% else %}Research Papers{% endif %}{% endblock %}
 
 {% block content %}
 <!-- PAGE HEADER -->
@@ -18,7 +18,7 @@
       </h1>
       <p style="color:rgba(255,255,255,.65);font-size:14px;margin:6px 0 0;">
         {% if lang_code == 'rw' %}
-          Ubushakashatsi bugufi, amakuru n'ibisobanuro by'ubumenyi.
+          Peer-reviewed research, working papers and academic publications.
         {% else %}
           Peer-reviewed research, working papers and academic publications.
         {% endif %}
@@ -196,8 +196,8 @@
     {% empty %}
     <div style="text-align:center;padding:60px 20px;background:var(--wh);border:1px solid var(--bdr);">
       <i class="fas fa-file-alt" style="font-size:48px;color:var(--bdr);display:block;margin-bottom:14px;"></i>
-      <h4 style="font-family:'Merriweather',serif;color:var(--navy);">{% if lang_code == 'rw' %}Nta nyandiko zabonetse{% else %}No papers found{% endif %}</h4>
-      <p style="color:var(--mg);">{% if lang_code == 'rw' %}Gerageza amagambo y'undi cyangwa hindura inzego.{% else %}Try different keywords or clear the filters.{% endif %}</p>
+      <h4 style="font-family:'Merriweather',serif;color:var(--navy);">{% if lang_code == 'rw' %}Nta nyandiko zibonetse{% else %}No papers found{% endif %}</h4>
+      <p style="color:var(--mg);">{% if lang_code == 'rw' %}Ongera ugerageze.{% else %}Try different keywords or clear the filters.{% endif %}</p>
       {% if q or active_field or active_review %}
       <a href="/{{ lang_code }}/research/" style="background:var(--navy);color:var(--gold);padding:8px 20px;border-radius:2px;font-weight:700;font-size:13px;">
         {% if lang_code == 'rw' %}Siba Firitiri{% else %}Clear Filters{% endif %}
@@ -212,7 +212,7 @@
   <div class="col-lg-4">
     <!-- Research Fields -->
     <div class="sw mb-4">
-      <div class="sw-hd"><i class="fas fa-flask"></i>{% if lang_code == 'rw' %}Inzego z'Ubushakashatsi{% else %}Research Fields{% endif %}</div>
+      <div class="sw-hd"><i class="fas fa-flask"></i>{% if lang_code == 'rw' %}Research Fields{% else %}Research Fields{% endif %}</div>
       <ul class="sw-list">
         <li><a href="/{{ lang_code }}/research/" class="{% if not active_field %}act{% endif %}">
           {% if lang_code == 'rw' %}Inzego Zose{% else %}All Fields{% endif %}<i class="fas fa-chevron-right fa-xs"></i></a></li>

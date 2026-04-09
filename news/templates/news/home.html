@@ -97,8 +97,7 @@
         <div class="col-12">
           <div class="no-articles">
             <i class="far fa-newspaper"></i>
-            <p>{% if lang_code == 'rw' %}Nta makuru arahari muri iri rurimi. Banza winjize amakuru mu buryo bwa admin.{% else %}No articles yet. Add articles via the admin panel.{% endif %}</p>
-            <a href="/admin/" class="admin-link">{% if lang_code == 'rw' %}Injira mu Admin{% else %}Go to Admin{% endif %}</a>
+            <p>{% if lang_code == 'rw' %}No news Yet{% else %}No articles yet. Add articles via the admin panel.{% endif %}</p>
           </div>
         </div>
         {% endfor %}
@@ -129,7 +128,7 @@
           </div>
         </div>
         {% empty %}
-        <div class="col-12"><p class="empty-msg">{% if lang_code == 'rw' %}Nta makuru arahari muri {{ cat.name }}.{% else %}No articles yet in {{ cat.name }}.{% endif %}</p></div>
+        <div class="col-12"><p class="empty-msg">{% if lang_code == 'rw' %}{{ cat.name }}.{% else %}No articles yet in {{ cat.name }}.{% endif %}</p></div>
         {% endfor %}
       </div>
     </section>
@@ -152,7 +151,7 @@
           </div>
         </li>
         {% empty %}
-        <li class="empty">{% if lang_code == 'rw' %}Nta makuru arahari.{% else %}No trending articles yet.{% endif %}</li>
+        <li class="empty">{% if lang_code == 'rw' %}..{% else %}No trending articles yet.{% endif %}</li>
         {% endfor %}
       </ul>
     </div>
@@ -165,7 +164,7 @@
       </ul>
     </div>
     <div class="sw">
-      <div class="sw-hd"><i class="fas fa-list"></i>{% if lang_code == 'rw' %}Inyito z'Inyandiko{% else %}Topics{% endif %}</div>
+      <div class="sw-hd"><i class="fas fa-list"></i>{% if lang_code == 'rw' %}Topics{% else %}Topics{% endif %}</div>
       <ul class="sw-list">
         {% for sub in subs %}
         <li><a href="{{ sub.get_absolute_url }}">{{ sub.name }}<i class="fas fa-chevron-right fa-xs"></i></a></li>
