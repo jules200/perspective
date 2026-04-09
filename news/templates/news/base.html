@@ -10,6 +10,14 @@
 <link href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,400;0,700;0,900;1,400&family=Source+Sans+Pro:wght@300;400;600;700&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="{% static 'news/css/base.css' %}">
 {% block extra_head %}{% endblock %}
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-50KLN9ZQYK"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-50KLN9ZQYK');
+</script>
 </head>
 <body>
 
@@ -96,7 +104,7 @@
         </li>
         {% endfor %}
         <li class="nav-item">
-          <a class="nav-link pnav-lnk" href="#">
+          <a class="nav-link pnav-lnk" href="/{{ lang_code }}/research/">
             {% if lang_code == 'rw' %}Inyandiko z'Ubushakashatsi{% else %}Research Paper{% endif %}
           </a>
         </li>

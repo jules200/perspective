@@ -4,7 +4,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-theperspectives-rw-2026'
 
 
-DEBUG = False
+DEBUG = True
 if DEBUG is False:
     ALLOWED_HOSTS = ['*']
     # ALLOWED_HOSTS = ['3.71.208.193', 'perspectiveshub.com', 'www.perspectiveshub.com']

@@ -1,0 +1,495 @@
+{% extends "news/base.html" %}
+{% load static %}
+{% block title %}{{ paper.title }}{% endblock %}
+
+{% block extra_head %}
+<meta name="description" content="{{ paper.abstract|truncatechars:200 }}">
+<meta name="keywords" content="{{ paper.keywords }}">
+<meta name="author" content="{{ paper.authors }}">
+{% if paper.doi %}<meta name="citation_doi" content="{{ paper.doi }}">{% endif %}
+<meta property="og:title" content="{{ paper.title }}">
+<meta property="og:description" content="{{ paper.abstract|truncatechars:200 }}">
+{% if paper.cover_image %}<meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{{ paper.cover_image.url }}">{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="row">
+
+  <!-- ── MAIN COLUMN ────────────────────────────────── -->
+  <div class="col-lg-8">
+
+    <!-- BREADCRUMB -->
+    <div class="bc-bar mb-3">
+      <a href="/{{ lang_code }}/">{% if lang_code == 'rw' %}Ahabanza{% else %}Home{% endif %}</a>
+      <span class="bs">›</span>
+      <a href="/{{ lang_code }}/research/">{% if lang_code == 'rw' %}Inyandiko z'Ubushakashatsi{% else %}Research Papers{% endif %}</a>
+      {% if paper.research_field %}
+      <span class="bs">›</span>
+      <a href="{{ paper.research_field.get_absolute_url }}">{{ paper.research_field.name }}</a>
+      {% endif %}
+    </div>
+
+    <!-- PAPER HEADER CARD -->
+    <div style="background:var(--wh);border:1px solid var(--bdr);border-top:4px solid var(--navy);padding:28px;margin-bottom:24px;">
+
+      <!-- Badge row -->
+      <div class="d-flex flex-wrap mb-3" style="gap:6px;">
+        {% if paper.research_field %}
+        <a href="{{ paper.research_field.get_absolute_url }}" class="ctag">{{ paper.research_field.name }}</a>
+        {% endif %}
+        {% if paper.sub_category %}
+        <a href="{{ paper.sub_category.get_absolute_url }}" style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--green);background:rgba(45,122,58,.07);padding:3px 8px;border-radius:2px;border-left:3px solid var(--green);">{{ paper.sub_category.name }}</a>
+        {% endif %}
+        {% if paper.peer_reviewed == 'yes' %}
+        <span style="font-size:10px;font-weight:700;background:#e8f5e9;color:var(--green);padding:3px 8px;border-radius:2px;border:1px solid #a5d6a7;">✓ {% if lang_code == 'rw' %}Isuzumwe n'Inzobere{% else %}Peer Reviewed{% endif %}</span>
+        {% elif paper.peer_reviewed == 'pending' %}
+        <span style="font-size:10px;font-weight:700;background:#fff3e0;color:#e65100;padding:3px 8px;border-radius:2px;border:1px solid #ffcc80;">⏳ {% if lang_code == 'rw' %}Irindirwa Isuzuma{% else %}Under Review{% endif %}</span>
+        {% else %}
+        <span style="font-size:10px;font-weight:700;background:#f5f5f5;color:var(--mg);padding:3px 8px;border-radius:2px;border:1px solid var(--bdr);">{% if lang_code == 'rw' %}Ntisuzumwe{% else %}Not Peer Reviewed{% endif %}</span>
+        {% endif %}
+        {% if paper.is_open_access %}
+        <span style="font-size:10px;font-weight:700;background:#fff8e1;color:var(--gold-dk);padding:3px 8px;border-radius:2px;border:1px solid var(--gold);">🔓 Open Access</span>
+        {% endif %}
+        {% if paper.is_featured %}
+        <span style="font-size:10px;font-weight:700;background:rgba(27,58,140,.1);color:var(--navy);padding:3px 8px;border-radius:2px;">⭐ {% if lang_code == 'rw' %}Yatorewe{% else %}Featured{% endif %}</span>
+        {% endif %}
+      </div>
+
+      <!-- Title -->
+      <h1 style="font:900 34px/1.2 'Merriweather',serif;color:var(--navy);margin-bottom:8px;">
+        {{ paper.title }}
+      </h1>
+      {% if paper.sub_title %}
+      <h2 style="font:400 20px/1.3 'Merriweather',serif;color:var(--mg);margin-bottom:16px;">{{ paper.sub_title }}</h2>
+      {% endif %}
+
+      <!-- Authors & Institution -->
+      <div style="margin-bottom:14px;">
+        <div style="font-size:15px;font-weight:700;color:var(--dg);margin-bottom:4px;">
+          <i class="fas fa-user-edit mr-2" style="color:var(--navy);"></i>
+          {% for author in paper.author_list %}
+          <span>{{ author }}{% if not forloop.last %}, {% endif %}</span>
+          {% endfor %}
+        </div>
+        {% if paper.institution %}
+        <div style="font-size:13px;color:var(--mg);">
+          <i class="fas fa-university mr-2" style="color:var(--navy);"></i>{{ paper.institution }}
+        </div>
+        {% endif %}
+        {% if paper.contact_email %}
+        <div style="font-size:13px;color:var(--mg);">
+          <i class="fas fa-envelope mr-2" style="color:var(--navy);"></i>
+          <a href="mailto:{{ paper.contact_email }}" style="color:var(--navy);">{{ paper.contact_email }}</a>
+        </div>
+        {% endif %}
+      </div>
+
+      <!-- Bibliographic metadata grid -->
+      <div style="background:#f8f9fd;border:1px solid var(--bdr);border-radius:4px;padding:14px 18px;margin-bottom:18px;">
+        <div class="row" style="font-size:13px;">
+          {% if paper.journal %}
+          <div class="col-md-6 mb-2">
+            <span style="font-weight:700;color:var(--navy);text-transform:uppercase;font-size:10px;letter-spacing:1px;">{% if lang_code == 'rw' %}Igazeti{% else %}Journal{% endif %}</span>
+            <div style="color:var(--dg);">{{ paper.journal }}</div>
+          </div>
+          {% endif %}
+          {% if paper.published_date %}
+          <div class="col-md-6 mb-2">
+            <span style="font-weight:700;color:var(--navy);text-transform:uppercase;font-size:10px;letter-spacing:1px;">{% if lang_code == 'rw' %}Itariki yo Gutangaza{% else %}Published{% endif %}</span>
+            <div style="color:var(--dg);">{{ paper.published_date|date:"F j, Y" }}</div>
+          </div>
+          {% endif %}
+          {% if paper.volume or paper.issue %}
+          <div class="col-md-6 mb-2">
+            <span style="font-weight:700;color:var(--navy);text-transform:uppercase;font-size:10px;letter-spacing:1px;">{% if lang_code == 'rw' %}Inomero{% else %}Volume / Issue{% endif %}</span>
+            <div style="color:var(--dg);">
+              {% if paper.volume %}Vol. {{ paper.volume }}{% endif %}
+              {% if paper.issue %}, No. {{ paper.issue }}{% endif %}
+              {% if paper.pages %}, pp. {{ paper.pages }}{% endif %}
+            </div>
+          </div>
+          {% endif %}
+          {% if paper.doi %}
+          <div class="col-md-6 mb-2">
+            <span style="font-weight:700;color:var(--navy);text-transform:uppercase;font-size:10px;letter-spacing:1px;">DOI</span>
+            <div>
+              <a href="{{ paper.doi_url }}" target="_blank" rel="noopener" style="color:var(--navy);font-size:13px;">
+                {{ paper.doi }}&nbsp;<i class="fas fa-external-link-alt fa-xs"></i>
+              </a>
+            </div>
+          </div>
+          {% endif %}
+          {% if paper.issn %}
+          <div class="col-md-6 mb-2">
+            <span style="font-weight:700;color:var(--navy);text-transform:uppercase;font-size:10px;letter-spacing:1px;">ISSN</span>
+            <div style="color:var(--dg);">{{ paper.issn }}</div>
+          </div>
+          {% endif %}
+          {% if paper.isbn %}
+          <div class="col-md-6 mb-2">
+            <span style="font-weight:700;color:var(--navy);text-transform:uppercase;font-size:10px;letter-spacing:1px;">ISBN</span>
+            <div style="color:var(--dg);">{{ paper.isbn }}</div>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Action buttons -->
+      <div class="d-flex flex-wrap" style="gap:10px;">
+        {% if paper.download_url %}
+        <a href="/{{ lang_code }}/research/{{ paper.slug }}/download/"
+           style="display:inline-flex;align-items:center;gap:8px;background:var(--navy);color:var(--gold);padding:10px 22px;font-weight:800;font-size:14px;border-radius:2px;transition:all .2s;"
+           onmouseover="this.style.background='var(--gold)';this.style.color='var(--navy-dk)'"
+           onmouseout="this.style.background='var(--navy)';this.style.color='var(--gold)'">
+          <i class="fas fa-download"></i>
+          {% if lang_code == 'rw' %}Kurura PDF{% else %}Download PDF{% endif %}
+          <span style="font-size:11px;opacity:.8;">({{ paper.downloads }})</span>
+        </a>
+        {% endif %}
+        {% if paper.doi_url %}
+        <a href="{{ paper.doi_url }}" target="_blank" rel="noopener"
+           style="display:inline-flex;align-items:center;gap:8px;background:transparent;color:var(--navy);border:2px solid var(--navy);padding:10px 20px;font-weight:700;font-size:14px;border-radius:2px;transition:all .2s;"
+           onmouseover="this.style.background='var(--navy)';this.style.color='#fff'"
+           onmouseout="this.style.background='transparent';this.style.color='var(--navy)'">
+          <i class="fas fa-external-link-alt"></i>
+          {% if lang_code == 'rw' %}Reba kuri DOI{% else %}View on DOI{% endif %}
+        </a>
+        {% endif %}
+        <!-- Citation copy button -->
+        <button onclick="copyCitation()"
+                style="display:inline-flex;align-items:center;gap:8px;background:transparent;color:var(--green);border:2px solid var(--green);padding:10px 20px;font-weight:700;font-size:14px;border-radius:2px;cursor:pointer;transition:all .2s;"
+                onmouseover="this.style.background='var(--green)';this.style.color='#fff'"
+                onmouseout="this.style.background='transparent';this.style.color='var(--green)'">
+          <i class="fas fa-quote-right"></i>
+          {% if lang_code == 'rw' %}Kopi Inomero{% else %}Copy Citation{% endif %}
+        </button>
+      </div>
+
+      <!-- View counter -->
+      <div style="margin-top:14px;font-size:12px;color:var(--mg);">
+        <i class="far fa-eye mr-1"></i>{{ paper.views }} {% if lang_code == 'rw' %}abantu basomye{% else %}views{% endif %}
+        <span style="margin:0 8px;color:var(--bdr);">|</span>
+        <i class="fas fa-download mr-1"></i>{{ paper.downloads }} {% if lang_code == 'rw' %}kurura{% else %}downloads{% endif %}
+        <span style="margin:0 8px;color:var(--bdr);">|</span>
+        <i class="fas fa-quote-right mr-1"></i>{{ paper.citation_count }} {% if lang_code == 'rw' %}ibisubizo{% else %}citations{% endif %}
+        <span style="margin:0 8px;color:var(--bdr);">|</span>
+        <i class="far fa-comment mr-1"></i>{{ paper.comment_count }} {% if lang_code == 'rw' %}ibitekerezo{% else %}comments{% endif %}
+      </div>
+    </div>
+
+    <!-- ABSTRACT -->
+    <section style="margin-bottom:28px;">
+      <div class="sec-hd">
+        <h2><i class="fas fa-align-left fa-xs mr-2" style="color:var(--gold);"></i>{% if lang_code == 'rw' %}Incamake{% else %}Abstract{% endif %}</h2>
+        <div class="sec-hd-bar"></div>
+      </div>
+      <div style="background:#f8f9fd;border-left:4px solid var(--navy);padding:20px 24px;font-size:16px;line-height:1.85;color:var(--dg);font-family:'Merriweather',serif;font-style:italic;">
+        {{ paper.abstract }}
+      </div>
+    </section>
+
+    <!-- KEYWORDS -->
+    {% if paper.keyword_list %}
+    <section style="margin-bottom:28px;">
+      <div style="padding:14px 18px;background:var(--wh);border:1px solid var(--bdr);">
+        <span style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--mg);margin-right:10px;">
+          <i class="fas fa-tags mr-1"></i>{% if lang_code == 'rw' %}Amagambo Shingiro{% else %}Keywords{% endif %}:
+        </span>
+        {% for kw in paper.keyword_list %}
+        <span style="display:inline-block;background:rgba(27,58,140,.07);color:var(--navy);border:1px solid var(--bdr);padding:3px 12px;font-size:12px;font-weight:600;margin:3px;border-radius:2px;">{{ kw }}</span>
+        {% endfor %}
+      </div>
+    </section>
+    {% endif %}
+
+    <!-- METHODOLOGY -->
+    {% if paper.methodology %}
+    <section style="margin-bottom:28px;">
+      <div class="sec-hd">
+        <h2><i class="fas fa-cogs fa-xs mr-2" style="color:var(--gold);"></i>{% if lang_code == 'rw' %}Uburyo bw'Ubushakashatsi{% else %}Methodology{% endif %}</h2>
+        <div class="sec-hd-bar"></div>
+      </div>
+      <div class="art-content">{% autoescape off %}{{ paper.methodology }}{% endautoescape %}</div>
+    </section>
+    {% endif %}
+
+    <!-- KEY FINDINGS -->
+    {% if paper.findings %}
+    <section style="margin-bottom:28px;">
+      <div class="sec-hd">
+        <h2><i class="fas fa-lightbulb fa-xs mr-2" style="color:var(--gold);"></i>{% if lang_code == 'rw' %}Ibisanga by'Ingenzi{% else %}Key Findings{% endif %}</h2>
+        <div class="sec-hd-bar"></div>
+      </div>
+      <div class="art-content">{% autoescape off %}{{ paper.findings }}{% endautoescape %}</div>
+    </section>
+    {% endif %}
+
+    <!-- SHARE -->
+    <div class="share-bar">
+      <span class="share-lbl"><i class="fas fa-share-alt mr-1"></i>{% if lang_code == 'rw' %}Sangira:{% else %}Share:{% endif %}</span>
+      <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri|urlencode }}" target="_blank" rel="noopener" class="sbtn fb"><i class="fab fa-facebook-f"></i> Facebook</a>
+      <a href="https://api.whatsapp.com/send?text={{ paper.title|urlencode }}%20{{ request.build_absolute_uri|urlencode }}" target="_blank" rel="noopener" class="sbtn wa"><i class="fab fa-whatsapp"></i> WhatsApp</a>
+      <a href="https://twitter.com/intent/tweet?url={{ request.build_absolute_uri|urlencode }}&text={{ paper.title|urlencode }}" target="_blank" rel="noopener" class="sbtn tw"><i class="fab fa-twitter"></i> X</a>
+      <a href="https://www.linkedin.com/sharing/share-offsite/?url={{ request.build_absolute_uri|urlencode }}" target="_blank" rel="noopener" class="sbtn" style="background:#0077B5;"><i class="fab fa-linkedin-in"></i> LinkedIn</a>
+    </div>
+
+    <!-- CITATION BOX -->
+    <div style="background:#f8f9fd;border:1px solid var(--bdr);border-left:4px solid var(--green);padding:18px 20px;margin-bottom:28px;" id="citation-box">
+      <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--mg);margin-bottom:10px;">
+        <i class="fas fa-quote-right mr-2" style="color:var(--green);"></i>{% if lang_code == 'rw' %}Inomero (APA){% else %}Cite This Paper (APA){% endif %}
+      </div>
+      <p style="font-size:14px;color:var(--dg);line-height:1.7;font-style:italic;margin:0;" id="citation-text">
+        {{ paper.authors }} ({% if paper.published_date %}{{ paper.published_date|date:"Y" }}{% else %}n.d.{% endif %}).
+        <em>{{ paper.title }}</em>{% if paper.sub_title %}: {{ paper.sub_title }}{% endif %}.
+        {% if paper.journal %}{{ paper.journal }},{% endif %}
+        {% if paper.volume %}{{ paper.volume }}{% if paper.issue %}({{ paper.issue }}){% endif %}{% if paper.pages %}, {{ paper.pages }}{% endif %}.{% endif %}
+        {% if paper.doi %}https://doi.org/{{ paper.doi }}{% elif paper.external_url %}Retrieved from {{ paper.external_url }}{% endif %}
+      </p>
+      <button onclick="copyCitation()" style="margin-top:10px;background:transparent;border:1.5px solid var(--green);color:var(--green);padding:5px 14px;font-size:12px;font-weight:700;cursor:pointer;border-radius:2px;transition:all .2s;" id="cite-btn"
+              onmouseover="this.style.background='var(--green)';this.style.color='#fff'"
+              onmouseout="this.style.background='transparent';this.style.color='var(--green)'">
+        <i class="fas fa-copy mr-1"></i>{% if lang_code == 'rw' %}Kopi{% else %}Copy to clipboard{% endif %}
+      </button>
+    </div>
+
+    <!-- CITATIONS RECEIVED -->
+    {% if citations %}
+    <section style="margin-bottom:28px;">
+      <div class="sec-hd">
+        <h2><i class="fas fa-external-link-alt fa-xs mr-2" style="color:var(--gold);"></i>{% if lang_code == 'rw' %}Ibisubizo byizerwa ({{ paper.citation_count }}){% else %}Cited By ({{ paper.citation_count }}){% endif %}</h2>
+        <div class="sec-hd-bar"></div>
+      </div>
+      {% for cite in citations %}
+      <div style="display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--bdr);align-items:flex-start;">
+        <div style="width:40px;height:40px;background:var(--navy);color:var(--gold);display:flex;align-items:center;justify-content:center;border-radius:50%;font-weight:800;font-size:13px;flex-shrink:0;">
+          {% if cite.year %}{{ cite.year }}{% else %}<i class="fas fa-quote-right fa-xs"></i>{% endif %}
+        </div>
+        <div>
+          <div style="font-weight:700;font-size:14px;color:var(--dg);">
+            {% if cite.cited_by_url %}<a href="{{ cite.cited_by_url }}" target="_blank" style="color:inherit;">{{ cite.cited_by }}</a>
+            {% else %}{{ cite.cited_by }}{% endif %}
+          </div>
+          {% if cite.cited_by_authors %}<div style="font-size:12px;color:var(--mg);">{{ cite.cited_by_authors }}</div>{% endif %}
+          {% if cite.cited_by_doi %}<div style="font-size:12px;color:var(--navy);"><i class="fas fa-fingerprint fa-xs mr-1"></i>{{ cite.cited_by_doi }}</div>{% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </section>
+    {% endif %}
+
+    <!-- SUPPLEMENTARY FILE -->
+    {% if paper.supplementary %}
+    <div style="background:var(--wh);border:1px solid var(--bdr);padding:16px 20px;margin-bottom:24px;display:flex;align-items:center;gap:14px;">
+      <i class="fas fa-paperclip" style="font-size:24px;color:var(--navy);"></i>
+      <div>
+        <div style="font-weight:700;font-size:14px;color:var(--navy);">{% if lang_code == 'rw' %}Inyandiko Yongeye{% else %}Supplementary Data{% endif %}</div>
+        <a href="{{ paper.supplementary.url }}" target="_blank" style="font-size:13px;color:var(--mg);">{{ paper.supplementary.name|cut:"papers/supplementary/" }}</a>
+      </div>
+      <a href="{{ paper.supplementary.url }}" target="_blank" style="margin-left:auto;background:rgba(27,58,140,.07);color:var(--navy);border:1.5px solid var(--bdr);padding:7px 16px;font-size:13px;font-weight:700;border-radius:2px;">
+        <i class="fas fa-download mr-1"></i>{% if lang_code == 'rw' %}Kurura{% else %}Download{% endif %}
+      </a>
+    </div>
+    {% endif %}
+
+    <!-- COMMENTS -->
+    <section style="margin-top:38px;">
+      <div class="sec-hd">
+        <h2><i class="far fa-comments fa-xs mr-2" style="color:var(--gold);"></i>{% if lang_code == 'rw' %}Ibitekerezo ({{ paper.comment_count }}){% else %}Discussion ({{ paper.comment_count }}){% endif %}</h2>
+        <div class="sec-hd-bar"></div>
+      </div>
+
+      {% for c in comments %}
+      <div class="cmt-item">
+        <div class="d-flex align-items-center mb-2">
+          <div class="cmt-av">{{ c.name|first|upper }}</div>
+          <div>
+            <div style="font-weight:700;font-size:14px;color:var(--navy);">{{ c.name }}{% if c.affiliation %}<span style="font-weight:400;font-size:12px;color:var(--mg);"> — {{ c.affiliation }}</span>{% endif %}</div>
+            <div style="font-size:12px;color:var(--mg);">{{ c.created_at|date:"F j, Y · H:i" }}</div>
+          </div>
+        </div>
+        <div style="font-size:15px;margin-top:10px;">{{ c.body }}</div>
+      </div>
+      {% empty %}
+      <div style="background:var(--wh);border:1px solid var(--bdr);padding:32px;text-align:center;margin-bottom:24px;">
+        <i class="far fa-comment-dots" style="font-size:40px;color:var(--bdr);display:block;margin-bottom:12px;"></i>
+        <p style="color:var(--mg);margin:0;">{% if lang_code == 'rw' %}Nta bitekerezo bihari. Banza usome!{% else %}No comments yet. Start the discussion!{% endif %}</p>
+      </div>
+      {% endfor %}
+
+      <!-- Comment form -->
+      <div class="cmt-form">
+        <h4><i class="far fa-edit mr-2" style="color:var(--gold);"></i>{% if lang_code == 'rw' %}Siga Igitekerezo{% else %}Leave a Comment{% endif %}</h4>
+        <p style="font-size:13px;color:var(--mg);margin-bottom:20px;">
+          {% if lang_code == 'rw' %}Igitekerezo cyawe kizasuzumwa mbere yo gusohoka.{% else %}Your comment will be reviewed before publishing. Academic questions and discussion welcome.{% endif %}
+        </p>
+        <form method="post" action="{{ paper.get_absolute_url }}">
+          {% csrf_token %}
+          <div class="row">
+            <div class="col-md-6 form-group">
+              <label style="font-weight:700;font-size:13px;color:var(--navy);">{% if lang_code == 'rw' %}Izina *{% else %}Name *{% endif %}</label>
+              {{ comment_form.name }}
+            </div>
+            <div class="col-md-6 form-group">
+              <label style="font-weight:700;font-size:13px;color:var(--navy);">{% if lang_code == 'rw' %}Imeli *{% else %}Email *{% endif %}</label>
+              {{ comment_form.email }}
+            </div>
+          </div>
+          <div class="form-group">
+            <label style="font-weight:700;font-size:13px;color:var(--navy);">{% if lang_code == 'rw' %}Inzego / Kaminuza{% else %}Affiliation / Institution{% endif %}</label>
+            {{ comment_form.affiliation }}
+          </div>
+          <div class="form-group">
+            <label style="font-weight:700;font-size:13px;color:var(--navy);">{% if lang_code == 'rw' %}Igitekerezo *{% else %}Comment *{% endif %}</label>
+            {{ comment_form.body }}
+          </div>
+          <button type="submit" class="btn-cmt">
+            <i class="fas fa-paper-plane mr-2"></i>{% if lang_code == 'rw' %}Ohereza{% else %}Submit Comment{% endif %}
+          </button>
+        </form>
+      </div>
+    </section>
+
+    <!-- RELATED PAPERS -->
+    {% if related %}
+    <div style="margin-top:42px;padding-top:22px;border-top:3px solid var(--navy);">
+      <div class="sec-hd">
+        <h2>{% if lang_code == 'rw' %}Inyandiko Zifitanye Isano{% else %}Related Papers{% endif %}</h2>
+        <div class="sec-hd-bar"></div>
+      </div>
+      <div class="row">
+        {% for p in related %}
+        <div class="col-md-6 mb-4">
+          <div class="ac h-100">
+            <div style="height:100px;background:linear-gradient(135deg,var(--navy-dk),var(--navy));display:flex;align-items:center;justify-content:center;">
+              {% if p.cover_image %}
+              <img src="{{ p.cover_image.url }}" alt="" style="width:100%;height:100%;object-fit:cover;opacity:.6;">
+              {% else %}
+              <i class="fas fa-file-alt" style="font-size:32px;color:rgba(245,196,0,.5);"></i>
+              {% endif %}
+            </div>
+            <div class="ac-body">
+              {% if p.research_field %}<div class="ctag">{{ p.research_field.name }}</div>{% endif %}
+              <h5><a href="{{ p.get_absolute_url }}" style="color:inherit;">{{ p.title }}</a></h5>
+              <div class="ameta">
+                <span><i class="fas fa-user-edit fa-xs"></i> {{ p.authors|truncatechars:40 }}</span>
+                {% if p.published_date %}<span class="s">|</span><span><i class="far fa-calendar-alt fa-xs"></i> {{ p.published_date|date:"Y" }}</span>{% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
+  </div>
+
+  <!-- ── SIDEBAR ─────────────────────────────────────── -->
+  <div class="col-lg-4">
+
+    <!-- QUICK META CARD -->
+    <div class="sw mb-4" style="position:sticky;top:72px;">
+      <div class="sw-hd"><i class="fas fa-info-circle"></i>{% if lang_code == 'rw' %}Amakuru Ngufi{% else %}Paper Info{% endif %}</div>
+      <div class="sw-body" style="padding:16px;">
+        <table style="width:100%;font-size:13px;border-collapse:collapse;">
+          {% if paper.peer_reviewed %}
+          <tr style="border-bottom:1px solid var(--bdr);">
+            <td style="padding:8px 0;font-weight:700;color:var(--navy);width:45%;">{% if lang_code == 'rw' %}Isuzuma{% else %}Peer Review{% endif %}</td>
+            <td style="padding:8px 0;color:var(--dg);">
+              {% if paper.peer_reviewed == 'yes' %}<span style="color:var(--green);">✓ Yes</span>
+              {% elif paper.peer_reviewed == 'pending' %}<span style="color:#e65100;">⏳ Pending</span>
+              {% else %}<span style="color:var(--mg);">No</span>{% endif %}
+            </td>
+          </tr>
+          {% endif %}
+          {% if paper.published_date %}
+          <tr style="border-bottom:1px solid var(--bdr);">
+            <td style="padding:8px 0;font-weight:700;color:var(--navy);">{% if lang_code == 'rw' %}Itariki{% else %}Published{% endif %}</td>
+            <td style="padding:8px 0;color:var(--dg);">{{ paper.published_date|date:"M j, Y" }}</td>
+          </tr>
+          {% endif %}
+          <tr style="border-bottom:1px solid var(--bdr);">
+            <td style="padding:8px 0;font-weight:700;color:var(--navy);">{% if lang_code == 'rw' %}Injira{% else %}Access{% endif %}</td>
+            <td style="padding:8px 0;">
+              {% if paper.is_open_access %}<span style="color:var(--gold-dk);">🔓 Open Access</span>
+              {% else %}<span style="color:var(--mg);">🔒 Restricted</span>{% endif %}
+            </td>
+          </tr>
+          <tr style="border-bottom:1px solid var(--bdr);">
+            <td style="padding:8px 0;font-weight:700;color:var(--navy);">{% if lang_code == 'rw' %}Amasomero{% else %}Views{% endif %}</td>
+            <td style="padding:8px 0;color:var(--dg);">{{ paper.views }}</td>
+          </tr>
+          <tr style="border-bottom:1px solid var(--bdr);">
+            <td style="padding:8px 0;font-weight:700;color:var(--navy);">{% if lang_code == 'rw' %}Kurura{% else %}Downloads{% endif %}</td>
+            <td style="padding:8px 0;color:var(--dg);">{{ paper.downloads }}</td>
+          </tr>
+          {% if paper.citation_count %}
+          <tr>
+            <td style="padding:8px 0;font-weight:700;color:var(--navy);">{% if lang_code == 'rw' %}Ibisubizo{% else %}Citations{% endif %}</td>
+            <td style="padding:8px 0;color:var(--dg);">{{ paper.citation_count }}</td>
+          </tr>
+          {% endif %}
+        </table>
+
+        {% if paper.download_url %}
+        <a href="/{{ lang_code }}/research/{{ paper.slug }}/download/"
+           style="display:block;background:var(--navy);color:var(--gold);text-align:center;padding:11px;font-weight:800;font-size:14px;border-radius:2px;margin-top:16px;transition:all .2s;"
+           onmouseover="this.style.background='var(--gold)';this.style.color='var(--navy-dk)'"
+           onmouseout="this.style.background='var(--navy)';this.style.color='var(--gold)'">
+          <i class="fas fa-download mr-2"></i>{% if lang_code == 'rw' %}Kurura PDF{% else %}Download PDF{% endif %}
+        </a>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- RECENT PAPERS -->
+    {% if recent %}
+    <div class="sw mb-4">
+      <div class="sw-hd"><i class="fas fa-clock"></i>{% if lang_code == 'rw' %}Inyandiko Nshya{% else %}Recent Papers{% endif %}</div>
+      <ul style="list-style:none;padding:0 16px;margin:0;">
+        {% for p in recent %}
+        <li style="padding:11px 0;border-bottom:1px solid var(--bdr);">
+          {% if p.research_field %}<div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--navy);">{{ p.research_field.name }}</div>{% endif %}
+          <div style="font:700 13px/1.3 'Merriweather',serif;margin:3px 0;"><a href="{{ p.get_absolute_url }}" style="color:var(--dg);">{{ p.title|truncatechars:70 }}</a></div>
+          <div style="font-size:11px;color:var(--mg);">{{ p.authors|truncatechars:40 }}{% if p.published_date %} · {{ p.published_date|date:"Y" }}{% endif %}</div>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% endif %}
+
+    <!-- RESEARCH FIELDS -->
+    <div class="sw">
+      <div class="sw-hd"><i class="fas fa-flask"></i>{% if lang_code == 'rw' %}Inzego z'Ubushakashatsi{% else %}Research Fields{% endif %}</div>
+      <ul class="sw-list">
+        <li><a href="/{{ lang_code }}/research/">{% if lang_code == 'rw' %}Byose{% else %}All Fields{% endif %}<i class="fas fa-chevron-right fa-xs"></i></a></li>
+        {% for f in fields %}
+        <li><a href="{{ f.get_absolute_url }}" class="{% if paper.research_field.pk == f.pk %}act{% endif %}">{{ f.name }}<i class="fas fa-chevron-right fa-xs"></i></a></li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- Hidden citation text for clipboard copy -->
+<script>
+function copyCitation() {
+  const text = document.getElementById('citation-text').innerText.trim().replace(/\s+/g, ' ');
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(text).then(function() {
+      const btn = document.getElementById('cite-btn');
+      const orig = btn.innerHTML;
+      btn.innerHTML = '<i class="fas fa-check mr-1"></i>{% if lang_code == "rw" %}Nakopi!{% else %}Copied!{% endif %}';
+      btn.style.background = 'var(--green)';
+      btn.style.color = '#fff';
+      setTimeout(function(){ btn.innerHTML = orig; btn.style.background = 'transparent'; btn.style.color = 'var(--green)'; }, 2500);
+    });
+  } else {
+    const ta = document.createElement('textarea');
+    ta.value = text; document.body.appendChild(ta);
+    ta.select(); document.execCommand('copy');
+    document.body.removeChild(ta);
+  }
+}
+</script>
+{% endblock %}

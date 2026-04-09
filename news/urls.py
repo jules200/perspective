@@ -14,4 +14,10 @@ urlpatterns = [
     path('category/<slug:cat_slug>/sub/<slug:sub_slug>/', views.cat_sub, name='cat_sub'),
     path('article/<slug:slug>/',views.article_detail, name='article'),
     path('search/',views.search,name='search'),
+
+    # Research papers
+    path('research/',                                     views.research_list,  name='research_list'),
+    path('research/field/<slug:field_slug>/',             views.research_field, name='research_field'),
+    path('research/<slug:slug>/',                         views.research_paper, name='research_paper'),
+    path('research/<slug:slug>/download/',                views.research_download, name='research_download'),
 ]
